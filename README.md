@@ -24,7 +24,7 @@ Nous allons tâcher de créer une API permettant d'effectuer des opérations CRU
 
 1. Cloner le projet avec `git clone` et installer les dépendances en vous basant sur le `package-lock.json` avec `npm ci`.
 2. Initialiser la base de donnée avec la commande `npm run db:migrate`.
-3. Initialiser la base de donnée avec des données de test avec la commande `npm run db:seed`.
+3. Initialiser la base de donnée avec des données de test avec la commande `npm run db:reset`.
 4. Regénérer le fichier `prisma/client` avec la commande `npx prisma generate`.
 5. Lancer le serveur avec la commande `npm run dev`.
 

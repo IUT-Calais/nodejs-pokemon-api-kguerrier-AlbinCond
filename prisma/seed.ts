@@ -27,6 +27,19 @@ async function main() {
     ],
   });
 
+  await prisma.pokemonCard.deleteMany();
+  await prisma.pokemonCard.create({
+    data: {
+        name: "Bulbizarre",
+        pokedexId: 1,
+        type: { connect: { id: 3 } },
+        lifePoints: 45,
+        size: 0.7,
+        weight: 6.9,
+        imageUrl: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png"
+    }
+  });
+
   console.log('Seed completed!');
 }
 

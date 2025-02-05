@@ -1,11 +1,11 @@
 import express from 'express';
-import pokemonRouter from './pokemons.router';
+import {pokemon} from './pokemons/pokemons.router';
 
 export const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(pokemonRouter);
+app.use(pokemon);
 
 export const server = app.listen(port);
 

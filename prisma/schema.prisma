@@ -25,3 +25,9 @@ model PokemonCard {
   weight Float? //Poids
   imageUrl String? //URL de l'image du Pokémon
 }
+
+model User {
+  id Int @id @default(autoincrement()) //Identifiant unique de l'utilisateur
+  email String @unique //Email de l'utilisateur
+  password String //Mot de passe de l'utilisateur
+}

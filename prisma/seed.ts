@@ -40,6 +40,14 @@ async function main() {
     }
   });
 
+  await prisma.user.deleteMany();
+  await prisma.user.create({
+    data: {
+      email: "admin@gmail.com",
+      password: "admin"
+    }
+  });
+
   console.log('Seed completed!');
 }
 

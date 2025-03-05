@@ -67,7 +67,7 @@ export const connectUser = async (req: Request|any, res: Response|any) => {
       
       else {
         const mysecretkey = process.env.JWT_SECRET;
-        const expire = process.env.JWT_EXPIRE;
+        const expire = process.env.JWT_EXPIRE_IN;
 
         if (!mysecretkey) {
           throw new Error('JWT_SECRET is not defined');

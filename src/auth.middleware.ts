@@ -18,6 +18,6 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     next();
 
   } else {
-    res.sendStatus(401);  
+    res.sendStatus(401).send({ error: 'Unauthorized' });  
   } 
 };

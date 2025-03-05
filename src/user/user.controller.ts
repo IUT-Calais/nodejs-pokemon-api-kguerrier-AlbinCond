@@ -29,7 +29,7 @@ export const creerUser = async (req: Request, res: Response) => {
           password: await bcrypt.hash(password, 10),
         },
       });
-      res.status(201).send(`User ${user.id} créé`);
+      res.status(201).send(user);
     }
   } 
 

@@ -1,0 +1,267 @@
+openapi: 3.0.0
+info:
+  title: API Pokemon Cards
+  description: API pour gérer les cartes Pokemon et les utilisateurs
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PokemonCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifiant unique de la carte
+        name:
+          type: string
+          description: Nom du Pokémon
+        pokedexId:
+          type: integer
+          description: Identifiant du pokémon dans le pokédex
+        typeId:
+          type: integer
+          description: ID du type du Pokémon
+        lifePoints:
+          type: integer
+          description: Points de vie
+        size:
+          type: number
+          description: Taille du Pokémon
+        weight:
+          type: number
+          description: Poids du Pokémon
+        imageUrl:
+          type: string
+          description: URL de l'image du Pokémon
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifiant unique de l'utilisateur
+        email:
+          type: string
+          description: Email de l'utilisateur
+        password:
+          type: string
+          description: Mot de passe de l'utilisateur
+
+paths:
+  /pokemon-cards:
+    get:
+      summary: Récupérer tous les Pokémons
+      responses:
+        '200':
+          description: Liste des Pokémons récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PokemonCard'
+        '400':
+          description: Erreur serveur
+
+    post:
+      summary: Créer un nouveau Pokémon
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PokemonCard'
+      responses:
+        '201':
+          description: Pokémon créé avec succès
+        '400':
+          description: Erreur de validation (type inexistant, nom/pokedexId en doublon)
+        '401':
+          description: Non authentifié
+        '554':
+          description: Champs requis manquants
+
+  /pokemon-cards/{pokemonCardId}:
+    get:
+      summary: Récupérer un Pokémon par son ID
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pokémon trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PokemonCard'
+        '404':
+          description: Pokémon non trouvé
+
+    patch:
+      summary: Modifier un Pokémon
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PokemonCard'
+      responses:
+        '200':
+          description: Pokémon modifié avec succès
+        '400':
+          description: Erreur de validation
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+
+    delete:
+      summary: Supprimer un Pokémon
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pokemonCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Pokémon supprimé avec succès
+        '401':
+          description: Non authentifié
+        '404':
+          description: Pokémon non trouvé
+
+  /users:
+    post:
+      summary: Créer un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Email déjà utilisé ou champs requis manquants
+        '500':
+          description: Erreur serveur
+
+  /users/login:
+    post:
+      summary: Connexion utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie avec token JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                  token:
+                    type: string
+        '400':
+          description: Mot de passe incorrect
+        '404':
+          description: Utilisateur non trouvé
+
+  /users/affiche:
+    get:
+      summary: Récupérer tous les utilisateurs
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+        '400':
+          description: Erreur serveur
+
+  /users/{userId}:
+    get:
+      summary: Récupérer un utilisateur par son ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilisateur trouvé
+        '404':
+          description: Utilisateur non trouvé
+
+    patch:
+      summary: Modifier un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Utilisateur modifié avec succès
+        '400':
+          description: Erreur de validation
+        '401':
+          description: Non authentifié
+
+    delete:
+      summary: Supprimer un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Utilisateur supprimé avec succès
+        '401':
+          description: Non authentifié
+        '404':
+          description: Utilisateur non trouvé

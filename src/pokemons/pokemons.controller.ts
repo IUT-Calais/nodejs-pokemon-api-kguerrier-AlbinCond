@@ -6,7 +6,7 @@ export const affichePokemons = async (_req: Request, res: Response) => {
   try { 
     res.status(200).json(await prisma.pokemonCard.findMany());
   } catch (error) {
-    res.status(400).send(`Erreur serveur : ${error}`);
+    res.status(400).json(`Erreur serveur : ${error}`);
   }
 };
 
@@ -47,7 +47,16 @@ export const creePokemon = async (req: Request, res: Response) => {
       where: { pokedexId: Number(pokedexId) },
     });
 
-    if (!pokemonType) {
+    if (name === undefined || pokedexId === undefined || type === undefined || lifePoints === undefined) {
+          const missingFields = [];
+          if (name === undefined) missingFields.push('name');
+          if (pokedexId === undefined) missingFields.push('pokedexId');
+          if (type === undefined) missingFields.push('type');
+          if (lifePoints === undefined) missingFields.push('lifePoints');
+          res.status(554).send(`Veuillez remplir tous les champs: ${missingFields.join(', ')}`);
+    }
+
+    else if (!pokemonType) {
       res.status(400).send(`Type de pokemon inconnu`);
     }
 
@@ -57,15 +66,6 @@ export const creePokemon = async (req: Request, res: Response) => {
 
     else if (pokemonID) {
       res.status(400).send(`Pokemon id déjà existant`);
-    }
-
-    else if (name === undefined || pokedexId === undefined || type === undefined || lifePoints === undefined) {
-      const missingFields = [];
-      if (name === undefined) missingFields.push('name');
-      if (pokedexId === undefined) missingFields.push('pokedexId');
-      if (type === undefined) missingFields.push('type');
-      if (lifePoints === undefined) missingFields.push('lifePoints');
-      res.status(554).send(`Veuillez remplir tous les champs: ${missingFields.join(', ')}`);
     }
 
     else{
@@ -84,7 +84,7 @@ export const creePokemon = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
-    res.status(400).send(`Erreur serveur : ${error}`);
+    res.status(400).json(`Erreur serveur : ${error}`);
   }
 };
 
@@ -166,6 +166,6 @@ export const supprimePokemon = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
-    res.status(400).send(`Erreur serveur : ${error}`);
+    res.status(400).json(`Erreur serveur : ${error}`);
   }
 };

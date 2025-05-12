@@ -15,13 +15,13 @@ export const creerUser = async (req: Request, res: Response) => {
 
     if (emailExist) {
       res.status(400).send('Email déjà utilisé');
-    } 
+    }
     else if (email === undefined || password === undefined) {
       const missingFields = [];
       if (email === undefined) missingFields.push('email');
       if (password === undefined) missingFields.push('password');
       res.status(400).send(`Veuillez remplir tous les champs: ${missingFields.join(', ')}`);
-    } 
+    }
     else {
       const user = await prisma.user.create({
         data: {
@@ -31,15 +31,12 @@ export const creerUser = async (req: Request, res: Response) => {
       });
       res.status(201).send(user);
     }
-  } 
+  }
 
   catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      res.status(500).json({ message: 'Une erreur ' + error.code + ' / ' + error.message });
-    }
 
     if (error instanceof Prisma.PrismaClientUnknownRequestError) {
-      res.status(500).send(`Une erreur est survenue : ${error.message}`);
+      res.status(502).send(`Une erreur est survenue : le client prisma a une request inconnu`);
     }
     res.status(500).send(`Erreur serveur : ${error}`);
   }
@@ -56,15 +53,15 @@ export const connectUser = async (req: Request|any, res: Response|any) => {
 
     if (!user) {
       res.status(404).send('Le compte n\'existe pas');
-    } 
-    
+    }
+
     else {
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
       if (!isPasswordCorrect) {
         return res.status(400).send('Invalid email or password');
-      } 
-      
+      }
+
       else {
         const mysecretkey = process.env.JWT_SECRET;
         const expire = process.env.JWT_EXPIRE_IN;
@@ -93,6 +90,65 @@ export const connectUser = async (req: Request|any, res: Response|any) => {
 export const afficheUser = async (_req: Request, res: Response) => {
   try {
     res.status(200).json(await prisma.user.findMany());
+  } catch (error) {
+    res.status(400).send(`Erreur serveur : ${error}`);
+  }
+};
+
+// Récupérer un utilisateur par ID
+export const afficheUserParId = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
+
+    if (!user) {
+      res.status(404).send('Utilisateur non trouvé');
+    } else {
+      res.status(200).json(user);
+    }
+  } catch (error) {
+    res.status(400).send(`Erreur serveur : ${error}`);
+  }
+};
+
+// Mettre à jour un utilisateur
+export const miseAJourUser = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const { email, password } = req.body;
+  try {
+    const data: any = {};
+    if (email) data.email = email;
+    if (password) data.password = await bcrypt.hash(password, 10);
+
+    const updatedUser = await prisma.user.update({
+      where: { id: Number(userId) },
+      data: data,
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(400).send(`Erreur serveur : ${error}`);
+  }
+};
+
+// Supprimer un utilisateur
+export const supprimeUser = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
+
+    if (!user) {
+      res.status(404).send('Utilisateur non trouvé');
+    } else {
+      await prisma.user.delete({
+        where: { id: Number(userId) },
+      });
+      res.status(204).send();
+    }
   } catch (error) {
     res.status(400).send(`Erreur serveur : ${error}`);
   }

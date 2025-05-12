@@ -79,7 +79,7 @@ export const connectUser = async (req: Request|any, res: Response|any) => {
 
         const token = JWT.sign(payload, mysecretkey, { expiresIn: expire });
 
-        res.status(201).json({
+        res.status(200).json({
           msg: "User connecté",
           token: token
         });

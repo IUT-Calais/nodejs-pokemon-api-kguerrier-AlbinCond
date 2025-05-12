@@ -65,7 +65,7 @@ export const creePokemon = async (req: Request, res: Response) => {
       if (pokedexId === undefined) missingFields.push('pokedexId');
       if (type === undefined) missingFields.push('type');
       if (lifePoints === undefined) missingFields.push('lifePoints');
-      res.status(400).send(`Veuillez remplir tous les champs: ${missingFields.join(', ')}`);
+      res.status(554).send(`Veuillez remplir tous les champs: ${missingFields.join(', ')}`);
     }
 
     else{

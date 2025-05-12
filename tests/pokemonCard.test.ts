@@ -87,6 +87,9 @@ describe('PokemonCard API', () => {
       };
 
       const createdPokemonCardWithId = { ...createdPokemonCard, id: 555, typeId: 3 };
+
+      prismaMock.type.findUnique.mockResolvedValue({ id: 3, name: 'Normal' });
+
       prismaMock.pokemonCard.create.mockResolvedValue(createdPokemonCardWithId);
 
       const response = await request(app)

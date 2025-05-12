@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '../src';
 import { prismaMock } from './jest.setup';
+import bcrypt from 'bcrypt';
 
 describe('User API', () => {
   describe('POST /users', () => {
@@ -23,12 +24,14 @@ describe('User API', () => {
 
       prismaMock.user.findUnique.mockResolvedValue(UserWithId);
 
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
       const response = await request(app).post('/users/login').send(user);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
-        token,
-        message: 'Connexion réussie',
+        msg: "User connecté",
+        token: token
       });
     });
   });
